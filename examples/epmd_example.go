@@ -1,6 +1,6 @@
 package main
 
-import "github.com/zeisss/epmd-client-go" epmd
+import epmd "github.com/zeisss/epmd-client-go"
 import "log"
 
 func main() {
