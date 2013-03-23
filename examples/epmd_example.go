@@ -15,7 +15,13 @@ func main() {
 	}
 	log.Println("NodeName\t Port")
 	for _, v := range names {
-		log.Println(v.Name+"\t", v.Port)
+		// Fetch details
+		node, err := client.Get(v.Name)
+		if err != nil {
+		  log.Println(v.Name+"\t", v.Port, "\t", err)
+		} else {
+		  log.Println(v.Name+"\t", v.Port, "\t", node.Extra)
+		}
 	}
 
 	log.Println("")

@@ -6,7 +6,7 @@ Some code for me to learn working with Go :) Provides an API to read the registe
 
 * `epmd.Get(nodeName) (*epmd.NodeInfo, error)`
 * `epmd.Names() ([]epmd.Name, error)`
-* `epmd.Register(...)`
+* `epmd.Register(...)` - Anounce itself as a 
 
 ## Links
 
