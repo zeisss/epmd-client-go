@@ -13,7 +13,7 @@ func main() {
 	if err != nil {
 		log.Fatalf("Failed to get name list from epmd: %v", err)
 	}
-	log.Println("NodeName\t Port")
+	log.Println("NodeName\t Port\t Extra")
 	for _, v := range names {
 		// Fetch details
 		node, err := client.Get(v.Name)
