@@ -33,5 +33,4 @@ func main() {
 
 	node, err = client.Get("doesnotexist")
 	log.Println("node:", node, "err:", err)
-
 }

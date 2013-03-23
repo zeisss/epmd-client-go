@@ -26,7 +26,6 @@ func parsePort2PleaseResponse(data []byte) (*NodeInfo, error) {
 		return nil, fmt.Errorf("Epmd responded with error code %v", int(data[1]))
 	}
 
-	// log.Printf("RES: %v\n", data)
 	var nodeInfo NodeInfo
 	nodeInfo.Port = binary.BigEndian.Uint16(data[2:4])
 	nodeInfo.NodeType = rune(data[4])
