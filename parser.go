@@ -28,7 +28,7 @@ func parsePort2PleaseResponse(data []byte) (*NodeInfo, error) {
 
 	var nodeInfo NodeInfo
 	nodeInfo.Port = binary.BigEndian.Uint16(data[2:4])
-	nodeInfo.NodeType = rune(data[4])
+	nodeInfo.NodeType = data[4]
 	nodeInfo.Protocol = data[5]
 	nodeInfo.HighestVersion = binary.BigEndian.Uint16(data[6:8])
 	nodeInfo.LowestVersion = binary.BigEndian.Uint16(data[8:10])

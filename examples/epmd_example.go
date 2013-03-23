@@ -1,6 +1,6 @@
 package main
 
-import epmd ".." // "github.com/zeisss/epmd-client-go"
+import epmd "github.com/ZeissS/epmd-client-go"
 import "log"
 
 func main() {
@@ -21,6 +21,9 @@ func main() {
 		  log.Println(v.Name+"\t", v.Port, "\t", err)
 		} else {
 		  log.Println(v.Name+"\t", v.Port, "\t", node.Extra)
+		  if node.NodeType == epmd.NODE_TYPE_HIDDEN {
+		    log.Println(" > Hidden!")
+		  }
 		}
 	}
 

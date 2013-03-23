@@ -33,7 +33,7 @@ type Name struct {
 type NodeInfo struct {
 	NodeName       string
 	Port           uint16
-	NodeType       rune // H = Hidden or M
+	NodeType       byte
 	Protocol       byte
 	HighestVersion uint16
 	LowestVersion  uint16
