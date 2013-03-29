@@ -3,7 +3,6 @@ package epmd
 import (
 	"bytes"
 	"encoding/binary"
-	//  "log"
 	"fmt"
 )
 

@@ -4,26 +4,27 @@ import (
 	"bytes"
 	"encoding/binary"
 	"fmt"
+	"io"
 	"net"
-
-//	"log"
 )
-
-var NAMES_REQ byte = byte('n')
-var PORT_PLEASE2_REQ byte = byte('z')
-var PORT2_RESP = byte('w')
 
 const (
 	ALIVE2_REQ  byte = 120
 	ALIVE2_RESP byte = 121
 
-	S_DEFAULT_PORT = "4369"
-	NL             = byte(10)
-	SP             = byte(32)
+	NAMES_REQ        byte = 110
+	PORT_PLEASE2_REQ byte = 122
+	PORT2_RESP       byte = 119
+
+	DEFAULT_PORT = "4369"
+	NL           = byte(10)
+	SP           = byte(32)
 
 	NODE_TYPE_HIDDEN byte = byte(72)
 	NODE_TYPE_ERLANG byte = byte(77)
 )
+
+var epmd_port = DEFAULT_PORT
 
 type Name struct {
 	Name string
@@ -63,9 +64,13 @@ func NewClient(hostname string) (*Client, error) {
 	return &Client{hostname}, nil
 }
 
+func SetPort(new_port string) {
+	epmd_port = new_port
+}
+
 func Names(epmd_hostname string) ([]Name, error) {
 	// Connect
-	laddr := net.JoinHostPort(epmd_hostname, S_DEFAULT_PORT)
+	laddr := net.JoinHostPort(epmd_hostname, epmd_port)
 	conn, err := net.Dial("tcp", laddr)
 	if err != nil {
 		return nil, err
@@ -73,25 +78,29 @@ func Names(epmd_hostname string) ([]Name, error) {
 	defer conn.Close()
 
 	// Send Request
-	n, err := sendRequest(conn, NAMES_REQ, nil)
+	_, err = sendRequest(conn, NAMES_REQ, nil)
 	if err != nil {
 		return nil, err
 	}
 
 	// Read Response
-	var buffer []byte = make([]byte, 1024*1024)
-	n, err = conn.Read(buffer)
+
+	var data []byte = make([]byte, 0, 16*1024)
+	buffer := bytes.NewBuffer(data)
+	n2, err := io.Copy(buffer, conn)
 	if err != nil {
 		return nil, err
 	}
 
 	// Parse
-	return parseNamesResponse(buffer[0:n])
+	return parseNamesResponse(buffer.Bytes()[0:n2])
 }
 
+// Request detailed data about the node with the given name
+// from the (remote) epmd_hostname.
 func Get(epmd_hostname, nodeName string) (*NodeInfo, error) {
 	// Connect
-	laddr := net.JoinHostPort(epmd_hostname, S_DEFAULT_PORT)
+	laddr := net.JoinHostPort(epmd_hostname, epmd_port)
 	conn, err := net.Dial("tcp", laddr)
 	if err != nil {
 		return nil, err
@@ -118,9 +127,9 @@ func Get(epmd_hostname, nodeName string) (*NodeInfo, error) {
 // Register the current process to the locally running epmd.
 // The protocol defaults to 0=tcp/ip
 //
-// @return an error if the registration failed (either because no EPMD is running or the registration failed)
+// Returns an error if the registration failed (either because no EPMD is running or the registration failed)
 func Register(port uint16, node_type byte, highest_version, lowest_version uint16, name, extra string) (net.Conn, error) {
-	conn, err := net.Dial("tcp", ":"+S_DEFAULT_PORT)
+	conn, err := net.Dial("tcp", ":"+epmd_port)
 	if err != nil {
 		return nil, err
 	}
